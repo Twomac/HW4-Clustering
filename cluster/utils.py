@@ -7,7 +7,7 @@ def make_clusters(
         k: int = 3, 
         bounds: tuple = (-10, 10),
         scale: float = 1,
-        seed: int = 42) -> (np.ndarray, np.ndarray):
+        seed: int = 42) -> tuple[np.ndarray, np.ndarray]:
     """
     creates some clustered data
 
@@ -33,14 +33,14 @@ def make_clusters(
     np.random.seed(seed)
     assert k <= n
 
-    labels = np.sort(np.random.randint(0, k, size=n))
-    centers = np.random.uniform(bounds[0], bounds[1], size=(k,m))
+    labels = np.sort(np.random.randint(0, k, size=n))  # assign cluster number to each observation, sorted to ensure that clusters are contiguous in the output matrix, indices corresponding to observation number
+    centers = np.random.uniform(bounds[0], bounds[1], size=(k,m)) # assign cluster centers in columns for each of m features, rows corresponding to cluster number
     mat = np.vstack([
         np.random.normal(
-            loc=centers[idx], 
-            scale=scale, 
-            size=(np.sum(labels==idx), m))
-        for idx in np.arange(0, k)])
+            loc=centers[idx],  # center of each cluster for each of the m features is the mean of each gaussian
+            scale=scale,
+            size=(np.sum(labels==idx), m)) # for each cluster, generate a normal distribution of observations around the cluster center (for each of the m features), with the number of observations corresponding to the number of times that cluster number appears in the labels array
+        for idx in np.arange(0, k)])  # idx is cluster number
 
     return mat, labels
 
